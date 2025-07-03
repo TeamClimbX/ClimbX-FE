@@ -89,12 +89,11 @@ class HistoryWidget extends HookWidget {
             : 0.0,
       );
     }
-
     return SingleChildScrollView(
       child: Column(
         children: [
           const SizedBox(height: 8),
-
+          
           // 기간 선택
           HistoryPeriodSelector(
             selectedPeriod: selectedPeriod.value,
@@ -103,7 +102,7 @@ class HistoryWidget extends HookWidget {
             },
             colorScheme: colorScheme,
           ),
-
+          
           const SizedBox(height: 8),
 
           // 로딩 상태

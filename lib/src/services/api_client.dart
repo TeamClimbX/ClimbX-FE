@@ -30,10 +30,10 @@ class ApiResponse<T> {
 /// Dio 기반 API 클라이언트
 class ApiClient {
   static final String _baseUrl = dotenv.env['BASE_URL'] ?? '';
-
+  
   late final Dio _dio;
   static ApiClient? _instance;
-
+  
   // 401 에러 발생 시 호출할 콜백 함수
   Function()? onUnauthorized;
 
@@ -44,18 +44,16 @@ class ApiClient {
   }
 
   ApiClient._internal() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: _baseUrl,
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
-    );
-
+    _dio = Dio(BaseOptions(
+      baseUrl: _baseUrl,
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ));
+    
     _setupInterceptors();
   }
 
@@ -68,7 +66,7 @@ class ApiClient {
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-
+          
           // 요청 로깅 (개발 모드에서만)
           if (kDebugMode) {
             developer.log(
@@ -79,7 +77,7 @@ class ApiClient {
               developer.log('Body: ${options.data}', name: 'ApiClient');
             }
           }
-
+          
           handler.next(options);
         },
         onResponse: (response, handler) {
@@ -102,7 +100,7 @@ class ApiClient {
 
   void _handleApiError(DioException error) {
     final statusCode = error.response?.statusCode ?? 0;
-
+    
     developer.log(
       'API Error: $statusCode - ${error.message}',
       name: 'ApiClient',
@@ -127,7 +125,7 @@ class ApiClient {
   ) {
     try {
       final statusCode = response.statusCode ?? 0;
-
+      
       // 응답 실패 시 바로 리턴
       if (statusCode < 200 || statusCode >= 300) {
         final httpStatus = response.data['body']['httpStatus'] as int;
@@ -188,17 +186,17 @@ class ApiClient {
       if (responseData is! Map<String, dynamic>) {
         return _getDefaultErrorMessage(statusCode);
       }
-
+      
       // statusMessage 키가 있으면 바로 리턴
       if (responseData.containsKey('statusMessage')) {
         return responseData['statusMessage'];
       }
-
+      
       // message 키가 있으면 바로 리턴
       if (responseData.containsKey('message')) {
         return responseData['message'];
       }
-
+      
       // error 키가 있으면 바로 리턴
       if (responseData.containsKey('error')) {
         return responseData['error'];
