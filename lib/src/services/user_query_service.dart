@@ -1,4 +1,5 @@
 import '../models/user_profile.dart';
+import '../models/history_data.dart';
 import 'user_service.dart';
 import 'auth_service.dart';
 
@@ -6,6 +7,7 @@ import 'auth_service.dart';
 class UserQueryKeys {
   static List<String> userProfile() => ['userProfile'];
   static List<String> authStatus() => ['authStatus'];
+  static List<String> userHistory() => ['userHistory'];
 }
 
 /// fquery mutation 키들
@@ -22,6 +24,16 @@ class UserQueryService {
       return response.data!;
     } else {
       throw Exception(response.error);
+    }
+  }
+
+  /// 히스토리 데이터 조회
+  static Future<HistoryData> getUserHistory() async {
+    final response = await UserService.getCurrentUserHistory(criteria: 'RATING');
+    if (response.success && response.data != null) {
+      return response.data!;
+    } else {
+      throw Exception(response.error ?? '데이터를 불러올 수 없습니다');
     }
   }
 }
