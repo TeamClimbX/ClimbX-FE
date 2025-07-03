@@ -6,7 +6,7 @@ import 'tier_widget.dart';
 import 'history_widget.dart';
 import 'streak_widget.dart';
 import '../utils/tier_colors.dart';
-import '../models/user_profile.dart';
+import '../services/user_service.dart';
 import '../services/user_query_service.dart';
 
 class ProfileBody extends HookWidget {

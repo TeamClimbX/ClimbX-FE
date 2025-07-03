@@ -30,10 +30,10 @@ class ApiResponse<T> {
 /// Dio 기반 API 클라이언트
 class ApiClient {
   static final String _baseUrl = dotenv.env['BASE_URL'] ?? '';
-
+  
   late final Dio _dio;
   static ApiClient? _instance;
-
+  
   // 401 에러 발생 시 호출할 콜백 함수
   Function()? onUnauthorized;
 
@@ -44,18 +44,16 @@ class ApiClient {
   }
 
   ApiClient._internal() {
-    _dio = Dio(
-      BaseOptions(
-        baseUrl: _baseUrl,
-        connectTimeout: const Duration(seconds: 5),
-        receiveTimeout: const Duration(seconds: 10),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-      ),
-    );
-
+    _dio = Dio(BaseOptions(
+      baseUrl: _baseUrl,
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 10),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    ));
+    
     _setupInterceptors();
   }
 
@@ -68,7 +66,7 @@ class ApiClient {
           if (token != null) {
             options.headers['Authorization'] = 'Bearer $token';
           }
-
+          
           // 요청 로깅 (개발 모드에서만)
           if (kDebugMode) {
             developer.log(
@@ -79,7 +77,7 @@ class ApiClient {
               developer.log('Body: ${options.data}', name: 'ApiClient');
             }
           }
-
+          
           handler.next(options);
         },
         onResponse: (response, handler) {
@@ -102,7 +100,7 @@ class ApiClient {
 
   void _handleApiError(DioException error) {
     final statusCode = error.response?.statusCode ?? 0;
-
+    
     developer.log(
       'API Error: $statusCode - ${error.message}',
       name: 'ApiClient',
@@ -127,7 +125,7 @@ class ApiClient {
   ) {
     try {
       final statusCode = response.statusCode ?? 0;
-
+      
       // 응답 실패 시 바로 리턴
       if (statusCode < 200 || statusCode >= 300) {
         return ApiResponse.failure('요청 처리 중 오류가 발생했습니다.', statusCode);
@@ -144,23 +142,16 @@ class ApiClient {
       }
 
       final responseData = response.data as Map<String, dynamic>;
-
-      // 새로운 API 구조: body 필드 확인
-      final bodyData = responseData['body'] as Map<String, dynamic>?;
-      if (bodyData == null) {
-        return ApiResponse.failure('응답 구조가 올바르지 않습니다.', statusCode);
-      }
-
-      final httpStatus = bodyData['httpStatus'] as int;
-
+      final httpStatus = responseData['httpStatus'] as int;
+      
       // httpStatus가 실패일 때 바로 리턴
       if (httpStatus < 200 || httpStatus >= 300) {
-        final statusMessage = bodyData['statusMessage'] ?? '요청 처리 실패';
+        final statusMessage = responseData['statusMessage'] ?? '요청 처리 실패';
         return ApiResponse.failure(statusMessage, httpStatus);
       }
 
       // 성공 케이스 - data 필드 추출
-      final actualData = bodyData['data'];
+      final actualData = responseData['data'];
       
       // fromJson이 있으면 변환, 없으면 data를 그대로 반환
       if (fromJson != null) {
@@ -206,17 +197,17 @@ class ApiClient {
       if (responseData is! Map<String, dynamic>) {
         return _getDefaultErrorMessage(statusCode);
       }
-
+      
       // statusMessage 키가 있으면 바로 리턴
       if (responseData.containsKey('statusMessage')) {
         return responseData['statusMessage'];
       }
-
+      
       // message 키가 있으면 바로 리턴
       if (responseData.containsKey('message')) {
         return responseData['message'];
       }
-
+      
       // error 키가 있으면 바로 리턴
       if (responseData.containsKey('error')) {
         return responseData['error'];
