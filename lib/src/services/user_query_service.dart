@@ -1,3 +1,4 @@
+import '../models/user_profile.dart';
 import 'user_service.dart';
 import 'auth_service.dart';
 

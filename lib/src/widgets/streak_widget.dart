@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/tier_colors.dart';
-import '../services/user_service.dart';
+import '../models/user_profile.dart';
 
 class StreakWidget extends StatelessWidget {
   final String tierName;

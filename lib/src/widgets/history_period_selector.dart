@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import '../utils/tier_colors.dart';
+import 'history_widget.dart';
 
 class HistoryPeriodSelector extends StatelessWidget {
-  final String selectedPeriod;
-  final Function(String) onPeriodChanged;
+  final HistoryPeriod selectedPeriod;
+  final Function(HistoryPeriod) onPeriodChanged;
   final TierColorScheme colorScheme;
 
   const HistoryPeriodSelector({
@@ -15,7 +16,7 @@ class HistoryPeriodSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final periods = ['전체', '6개월', '1개월', '1주', '1일'];
+    const periods = HistoryPeriod.values;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -36,7 +37,7 @@ class HistoryPeriodSelector extends StatelessWidget {
                     : Border.all(color: const Color(0xFFE2E8F0), width: 1),
               ),
               child: Text(
-                period,
+                period.label,
                 style: TextStyle(
                   color: isSelected ? Colors.white : const Color(0xFF64748B),
                   fontSize: 13,
@@ -49,4 +50,4 @@ class HistoryPeriodSelector extends StatelessWidget {
       ),
     );
   }
-} 
+}
