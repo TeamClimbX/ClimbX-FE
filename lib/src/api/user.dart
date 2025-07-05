@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 import 'util/core/api_client.dart';
 import '../models/user_profile.dart';
 import '../models/history_data.dart';
+import '../models/streak_data.dart';
 
 /// 사용자 관련 API 호출 함수들
 class UserApi {
@@ -80,6 +81,50 @@ class UserApi {
       from: from,
       to: to,
       criteria: criteria,
+    );
+  }
+
+  /// 사용자 스트릭 조회 (queryParameters 방식 사용)
+  static Future<StreakData> getUserStreak({
+    String username = 'alice',
+    String? from,
+    String? to,
+  }) async {
+    try {
+      // 쿼리 파라미터 구성
+      final queryParams = <String, String>{};
+      if (from != null) queryParams['from'] = from;
+      if (to != null) queryParams['to'] = to;
+
+      final data = await _apiClient.get<dynamic>(
+        '/api/users/$username/streak',
+        queryParameters: queryParams,
+        logContext: 'UserApi',
+      );
+
+      // StreakData는 List<dynamic>을 기대하므로 타입 체크
+      if (data is List) {
+        final streakData = StreakData.fromJson(data);
+        developer.log('스트릭 데이터 ${streakData.items.length}개 조회 성공', name: 'UserApi');
+        return streakData;
+      } else {
+        developer.log('StreakData: List가 아닌 데이터, 빈 리스트 사용', name: 'UserApi');
+        return StreakData.fromJson([]);
+      }
+    } catch (e) {
+      throw Exception('스트릭 데이터를 불러올 수 없습니다: $e');
+    }
+  }
+
+  /// 현재 사용자 스트릭 조회 (간편 메서드)
+  static Future<StreakData> getCurrentUserStreak({
+    String? from,
+    String? to,
+  }) async {
+    return await getUserStreak(
+      username: 'alice',
+      from: from,
+      to: to,
     );
   }
 } 

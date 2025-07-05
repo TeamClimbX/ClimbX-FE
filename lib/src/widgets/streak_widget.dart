@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fquery/fquery.dart';
 import '../utils/tier_colors.dart';
 import '../models/user_profile.dart';
+import '../models/streak_data.dart';
+import '../api/user.dart';
 
-class StreakWidget extends StatelessWidget {
+class StreakWidget extends HookWidget {
   final String tierName;
   final UserProfile? userProfile;
 
@@ -17,6 +21,83 @@ class StreakWidget extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final TierType currentTier = TierColors.getTierFromString(tierName);
     final TierColorScheme colorScheme = TierColors.getColorScheme(currentTier);
+
+    // fquery로 스트릭 데이터 get
+    final streakQuery = useQuery<StreakData, Exception>(
+      ['user_streak'],
+      UserApi.getCurrentUserStreak,
+    );
+
+    // 로딩 상태
+    if (streakQuery.isLoading) {
+      return Container(
+        width: double.infinity,
+        height: 400,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFFFFF), Color(0xFFF8FAFC)],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x08000000),
+              blurRadius: 20,
+              offset: Offset(0, 4),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // 에러 상태
+    if (streakQuery.isError) {
+      return Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFFFFFFFF), Color(0xFFF8FAFC)],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x08000000),
+              blurRadius: 20,
+              offset: Offset(0, 4),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text(
+              '스트릭 데이터를 불러올 수 없습니다',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => streakQuery.refetch(),
+              child: const Text('다시 시도'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final streakData = streakQuery.data;
 
     return Container(
       width: double.infinity,
@@ -92,12 +173,12 @@ class StreakWidget extends StatelessWidget {
                     children: [
                       const TextSpan(text: '최대 '),
                       TextSpan(
-                        text: userProfile != null
-                            ? '${userProfile!.longestStreak}'
+                        text: streakData != null
+                            ? '${streakData.longestStreak}'
                             : '0',
                         style: TextStyle(color: colorScheme.primary),
                       ),
-                      const TextSpan(text: '주 출석'),
+                      const TextSpan(text: '일 출석'),
                     ],
                   ),
                 ),
@@ -107,7 +188,7 @@ class StreakWidget extends StatelessWidget {
             SizedBox(height: screenWidth * 0.04),
 
             // 깃허브 잔디 스타일 그리드
-            _buildStreakGrid(colorScheme),
+            _buildStreakGrid(colorScheme, streakData),
 
             SizedBox(height: screenWidth * 0.04),
 
@@ -137,8 +218,8 @@ class StreakWidget extends StatelessWidget {
                       Expanded(
                         child: _buildStatItem(
                           '현재 스트릭',
-                          userProfile != null
-                              ? '${userProfile!.currentStreak}일'
+                          streakData != null
+                              ? '${streakData.currentStreak}일'
                               : '0일',
                           colorScheme,
                         ),
@@ -146,8 +227,8 @@ class StreakWidget extends StatelessWidget {
                       Expanded(
                         child: _buildStatItem(
                           '최장 스트릭',
-                          userProfile != null
-                              ? '${userProfile!.longestStreak}일'
+                          streakData != null
+                              ? '${streakData.longestStreak}일'
                               : '0일',
                           colorScheme,
                         ),
@@ -163,8 +244,8 @@ class StreakWidget extends StatelessWidget {
                       Expanded(
                         child: _buildStatItem(
                           '총 제출일',
-                          userProfile != null
-                              ? '${userProfile!.solvedProblemsCount}일'
+                          streakData != null
+                              ? '${streakData.totalDays}일'
                               : '0일',
                           colorScheme,
                         ),
@@ -180,13 +261,14 @@ class StreakWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildStreakGrid(TierColorScheme colorScheme) {
-    // 24주간의 데이터를 표시 (나중에는 실제 데이터 값으로 변경)
+  Widget _buildStreakGrid(TierColorScheme colorScheme, StreakData? streakData) {
+    // 24주간의 데이터를 표시
     const int weeks = 24;
     const int daysPerWeek = 7;
 
-    // 임시 데이터 - 실제로는 API에서 받아올 것
-    final List<List<int>> streakData = _generateMockStreakData(weeks);
+    // 실제 API 데이터 사용, 없으면 빈 데이터
+    final List<List<int>> weeklyData = streakData?.weeklyData ?? 
+        List.generate(weeks, (_) => List.generate(daysPerWeek, (_) => 0));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -219,9 +301,6 @@ class StreakWidget extends StatelessWidget {
             const SizedBox(width: 8),
 
             // 실제 그리드 (가로 스크롤)
-            // 현재 스트릭 데이터가 2차원 데이터
-            // streakData[weekIndex][dayIndex]로 있는데
-            // 백에서 전처리하거나 프론트에서 바꿔야함
             Expanded(
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
@@ -237,7 +316,7 @@ class StreakWidget extends StatelessWidget {
                           margin: const EdgeInsets.only(right: 2, bottom: 2),
                           decoration: BoxDecoration(
                             color: _getStreakColor(
-                              streakData[weekIndex][dayIndex],
+                              weeklyData[weekIndex][dayIndex],
                               colorScheme,
                             ),
                             borderRadius: BorderRadius.circular(3),
@@ -357,21 +436,7 @@ class StreakWidget extends StatelessWidget {
     );
   }
 
-  // 임시 데이터 생성 (나중에 안쓸 예정)
-  List<List<int>> _generateMockStreakData(int weeks) {
-    return List.generate(
-      weeks,
-      (weekIndex) => List.generate(7, (dayIndex) {
-        // 랜덤하게 0-4 사이의 값 생성
-        final random = (weekIndex * 7 + dayIndex) % 17;
-        if (random < 5) return 0;
-        if (random < 10) return 1;
-        if (random < 14) return 2;
-        if (random < 16) return 3;
-        return 4;
-      }),
-    );
-  }
+
 
   // 현재는 0 1 2 3 으로 구분 이후에는 최댓값 기준으로 수정 예정
   Color _getStreakColor(int submissions, TierColorScheme colorScheme) {
