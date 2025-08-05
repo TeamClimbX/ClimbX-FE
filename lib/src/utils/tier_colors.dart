@@ -116,31 +116,31 @@ class TierColors {
 
   /// Rating 점수를 TierType으로 변환
   static TierType getTierTypeFromRating(int rating) {
-    if (rating >= 2800) return TierType.master;
-    if (rating >= 2200) return TierType.diamond; // Diamond I, II, III
-    if (rating >= 1600) return TierType.platinum; // Platinum I, II, III
-    if (rating >= 1000) return TierType.gold; // Gold I, II, III
-    if (rating >= 400) return TierType.silver; // Silver I, II, III
+    if (rating >= 2250) return TierType.master;
+    if (rating >= 1800) return TierType.diamond; // Diamond I, II, III
+    if (rating >= 1350) return TierType.platinum; // Platinum I, II, III
+    if (rating >= 900) return TierType.gold; // Gold I, II, III
+    if (rating >= 450) return TierType.silver; // Silver I, II, III
     return TierType.bronze; // Bronze I, II, III
   }
 
   /// Rating 점수를 상세 티어 문자열로 변환
   static String getTierStringFromRating(int rating) {
-    if (rating >= 2800) return 'Master';
-    if (rating >= 2600) return 'Diamond I';
-    if (rating >= 2400) return 'Diamond II';
-    if (rating >= 2200) return 'Diamond III';
-    if (rating >= 2000) return 'Platinum I';
-    if (rating >= 1800) return 'Platinum II';
-    if (rating >= 1600) return 'Platinum III';
-    if (rating >= 1400) return 'Gold I';
-    if (rating >= 1200) return 'Gold II';
-    if (rating >= 1000) return 'Gold III';
-    if (rating >= 800) return 'Silver I';
+    if (rating >= 2250) return 'Master';
+    if (rating >= 2100) return 'Diamond I';
+    if (rating >= 1950) return 'Diamond II';
+    if (rating >= 1800) return 'Diamond III';
+    if (rating >= 1650) return 'Platinum I';
+    if (rating >= 1500) return 'Platinum II';
+    if (rating >= 1350) return 'Platinum III';
+    if (rating >= 1200) return 'Gold I';
+    if (rating >= 1050) return 'Gold II';
+    if (rating >= 900) return 'Gold III';
+    if (rating >= 750) return 'Silver I';
     if (rating >= 600) return 'Silver II';
-    if (rating >= 400) return 'Silver III';
-    if (rating >= 200) return 'Bronze I';
-    if (rating >= 100) return 'Bronze II';
+    if (rating >= 450) return 'Silver III';
+    if (rating >= 300) return 'Bronze I';
+    if (rating >= 150) return 'Bronze II';
     return 'Bronze III';
   }
 

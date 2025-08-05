@@ -26,6 +26,10 @@ class _MainPageState extends State<MainPage> {
   UserProfile? _userProfile;
   bool _isLoading = true;
   String? _error;
+  
+  // TODO: 디버깅용 - 나중에 제거할 것
+  int _debugRating = 0;
+  bool _isDebugMode = false;
 
   @override
   void initState() {
@@ -69,16 +73,37 @@ class _MainPageState extends State<MainPage> {
 
     // 유저 프로필이 로드된 경우
     final userTier = _userProfile?.tier ?? 'Bronze III';
-    final TierType tierType = TierColors.getTierFromString(userTier);
-    final TierColorScheme colorScheme = TierColors.getColorScheme(tierType);
+    
+    // TODO: 디버깅용 - 나중에 제거할 것
+    final TierType tierType;
+    final TierColorScheme colorScheme;
+    if (_isDebugMode) {
+      // 디버깅 모드일 때는 레이팅에 따라 티어 결정
+      tierType = TierColors.getTierTypeFromRating(_debugRating);
+      colorScheme = TierColors.getColorScheme(tierType);
+    } else {
+      // 일반 모드일 때는 기존 로직 사용
+      tierType = TierColors.getTierFromString(userTier);
+      colorScheme = TierColors.getColorScheme(tierType);
+    }
+
+    // 원본 코드 (나중에 복원할 것)
+    // final TierType tierType = TierColors.getTierFromString(userTier);
+    // final TierColorScheme colorScheme = TierColors.getColorScheme(tierType);
 
     return TierProvider(
       colorScheme: colorScheme,
       child: Scaffold(
         backgroundColor: AppColorSchemes.backgroundSecondary,
 
-        // 상단 앱바
-        appBar: const CustomAppBar(),
+        // TODO: 디버깅용 - 나중에 제거할 것
+        appBar: CustomAppBar(
+          onDebugRatingChange: _handleDebugRatingChange,
+        ),
+        // 원본 코드 (나중에 복원할 것)
+        // appBar: const CustomAppBar(),
+
+        
       // Body - Indexed Stack으로 화면 전환
       body: IndexedStack(
         index: _currentTab.index,
@@ -106,6 +131,33 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     );
+  }
+
+  // TODO: 디버깅용 - 나중에 제거할 것
+  void _handleDebugRatingChange() {
+    setState(() {
+      if (!_isDebugMode) {
+        _isDebugMode = true;
+        _debugRating = 900; // Gold III로 시작
+      } else {
+        // 다음 레이팅으로 순환 (정확한 티어 구간)
+        if (_debugRating >= 2250) {
+          _debugRating = 0; // Bronze III로 돌아가기
+        } else if (_debugRating >= 1800) {
+          _debugRating = 2250; // Master
+        } else if (_debugRating >= 1350) {
+          _debugRating = 1800; // Diamond III
+        } else if (_debugRating >= 900) {
+          _debugRating = 1350; // Platinum III
+        } else if (_debugRating >= 450) {
+          _debugRating = 900; // Gold III
+        } else if (_debugRating >= 0) {
+          _debugRating = 450; // Silver III
+        }
+      }
+    });
+    
+    developer.log('디버깅 레이팅 변경: $_debugRating', name: 'MainPage');
   }
 
   // 출시 예정 페이지 (임시페이지임 삭제 예정)

@@ -5,7 +5,15 @@ import '../utils/color_schemes.dart';
 import '../api/auth.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const CustomAppBar({super.key});
+  // TODO: 디버깅용 - 나중에 제거할 것
+  final VoidCallback? onDebugRatingChange;
+  const CustomAppBar({
+    super.key,
+    this.onDebugRatingChange,
+  });
+
+  // 원본 생성자 (나중에 복원할 것)
+  // const CustomAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +37,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
       // 액션들
       actions: [
+        // TODO: 디버깅용 레이팅 변경 버튼 - 나중에 제거할 것
+        if (onDebugRatingChange != null)
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: AppColorSchemes.backgroundSecondary,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.tune, color: AppColorSchemes.textSecondary, size: 22),
+              onPressed: onDebugRatingChange,
+            ),
+          ),
+
         // 로그아웃 버튼 (임시, 나중에 제거 예정)
         Container(
           margin: const EdgeInsets.only(right: 8),
