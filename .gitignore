@@ -64,3 +64,6 @@ app.*.map.json
 # Firebase config (should not be committed)
 GoogleService-Info.plist
 **/GoogleService-Info.plist
+
+ios/Flutter/Debug.xcconfig
+ios/Flutter/Release.xcconfig

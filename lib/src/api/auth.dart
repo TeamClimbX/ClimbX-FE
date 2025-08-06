@@ -115,6 +115,7 @@ class AuthApi {
 
       // 카카오톡 설치 확인
       if (await isKakaoTalkInstalled()) {
+        developer.log('카카오톡 설치되어 있음', name: 'AuthApi');
         try {
           // 카카오톡으로 로그인 시도 (nonce 포함)
           await UserApi.instance.loginWithKakaoTalk(nonce: nonce);
@@ -139,6 +140,7 @@ class AuthApi {
         }
       } else {
         // 카카오톡이 설치되지 않은 경우 카카오계정으로 로그인
+        developer.log('카카오톡 설치되어 있지 않음', name: 'AuthApi');
         try {
           await UserApi.instance.loginWithKakaoAccount(nonce: nonce);
           developer.log('카카오계정으로 로그인 성공', name: 'AuthApi');
@@ -229,7 +231,9 @@ class AuthApi {
       final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'];
 
       await GoogleSignIn.instance.initialize(
-        clientId: defaultTargetPlatform == TargetPlatform.iOS ? iosClientId : null,
+        clientId: defaultTargetPlatform == TargetPlatform.iOS
+            ? iosClientId
+            : null,
         serverClientId: webClientId,
       );
 
@@ -301,10 +305,12 @@ class AuthHelpers {
   static Future<bool> isLoggedIn() async {
     // 1. 토큰 존재 확인
     if (!await TokenStorage.hasToken()) return false;
-    
+
     // 2. 토큰 유효성 검증 + 닉네임 최신화
     try {
-      final authData = await ApiClient.instance.get<Map<String, dynamic>>('/api/auth/me');
+      final authData = await ApiClient.instance.get<Map<String, dynamic>>(
+        '/api/auth/me',
+      );
       final nickname = authData['nickname'] as String?;
       if (nickname != null && nickname.isNotEmpty) {
         await TokenStorage.saveUserNickname(nickname);
