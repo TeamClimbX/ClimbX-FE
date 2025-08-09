@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/map_body.dart';
 import '../widgets/profile_body.dart';
 import '../widgets/leaderboard_body.dart';
+import '../widgets/search_body.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_bottom_navigation_bar.dart';
 import '../utils/tier_colors.dart';
@@ -32,7 +33,7 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     // 초기 탭 설정 - 프로필이 첫 번째 탭이므로 기본값으로 설정
     _currentTab = widget.initialTab ?? BottomNavTab.profile;
-    
+
     // 유저 프로필 로드
     _loadUserProfile();
   }
@@ -82,15 +83,15 @@ class _MainPageState extends State<MainPage> {
       // Body - Indexed Stack으로 화면 전환
       body: IndexedStack(
         index: _currentTab.index,
-        children: [
+        children: const [
           // 0: 프로필
-          const ProfileBody(),
+          ProfileBody(),
           // 1: 리더보드
-          const LeaderboardBody(),
+          LeaderboardBody(),
           // 2: 검색
-          _buildComingSoon('검색', Icons.search),
+          SearchBody(),
           // 3: 지도
-          const MapBody(),
+          MapBody(),
         ],
       ),
 
@@ -107,62 +108,7 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-
-  // 출시 예정 페이지 (임시페이지임 삭제 예정)
-  Widget _buildComingSoon(
-    String title,
-    IconData icon,
-  ) {
-    final screenSize = MediaQuery.of(context).size;
-
-    return Center(
-      child: Container(
-        width: screenSize.width * 0.85,
-        height: screenSize.height * 0.4,
-        decoration: BoxDecoration(
-          color: AppColorSchemes.backgroundPrimary,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: AppColorSchemes.lightShadow,
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(screenSize.width * 0.05),
-              decoration: BoxDecoration(
-                gradient: AppColorSchemes.defaultGradient,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                icon,
-                color: AppColorSchemes.backgroundPrimary,
-                size: screenSize.width * 0.08,
-              ),
-            ),
-            SizedBox(height: screenSize.height * 0.02),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: screenSize.width * 0.05,
-                fontWeight: FontWeight.w700,
-                color: AppColorSchemes.textPrimary,
-              ),
-            ),
-            SizedBox(height: screenSize.height * 0.01),
-            Text(
-              '곧 출시 예정입니다',
-              style: TextStyle(
-                fontSize: screenSize.width * 0.035,
-                color: AppColorSchemes.textSecondary,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
+  
   /// 유저 프로필 로드
   Future<void> _loadUserProfile() async {
     setState(() {
@@ -173,7 +119,7 @@ class _MainPageState extends State<MainPage> {
     try {
       developer.log('유저 프로필 로드 시작', name: 'MainPage');
       final userProfile = await UserApi.getCurrentUserProfile();
-      
+
       if (mounted) {
         setState(() {
           _userProfile = userProfile;

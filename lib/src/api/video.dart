@@ -24,7 +24,7 @@ class VideoUploadResponse {
 /// 영상 관련 API 호출 함수들
 class VideoApi {
   static final _apiClient = ApiClient.instance;
-  
+
   /// 업로드 가능한 최대 파일 크기 (100MB)
   static const _maxUploadSize = 100 * 1024 * 1024;
 
@@ -33,7 +33,7 @@ class VideoApi {
     try {
       // 사용자 닉네임 가져오기 (기존 TokenStorage 활용)
       String? finalNickname = await TokenStorage.getUserNickname();
-      
+
       if (finalNickname == null || finalNickname.isEmpty) {
         developer.log('저장된 닉네임이 없음 - /api/auth/me 호출', name: 'VideoApi');
 
@@ -139,10 +139,12 @@ class VideoApi {
       await s3Dio.put(
         presignedUrl,
         data: file.openRead(),
-        options: Options(headers: {
-          'Content-Type': contentType,
-          'Content-Length': fileSize.toString(),
-        }),
+        options: Options(
+          headers: {
+            'Content-Type': contentType,
+            'Content-Length': fileSize.toString(),
+          },
+        ),
         onSendProgress: onProgress != null
             ? (sent, total) {
                 final progress = sent / total;
@@ -232,7 +234,10 @@ class VideoApi {
 
       // 5. presigned URL 요청 (압축된 파일 정보로)
       // 압축된 파일의 확장자를 사용해 presigned URL을 요청합니다.
-      final compressedFileExtension = compressedFilePath.split('.').last.toLowerCase();
+      final compressedFileExtension = compressedFilePath
+          .split('.')
+          .last
+          .toLowerCase();
       final uploadResponse = await requestUploadUrl(
         fileExtension: compressedFileExtension,
         fileSize: compressedFileSize,

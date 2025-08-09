@@ -61,7 +61,7 @@ dependencies:
   # 구글 로그인
   google_sign_in: ^7.1.1
   crypto: ^3.0.2
-  flutter_image_compress: ^2.1.0
+  flutter_image_compress: ^2.4.0
   path_provider: ^2.0.15
   path: ^1.9.0
   http_parser: ^4.0.2

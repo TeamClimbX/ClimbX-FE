@@ -12,4 +12,5 @@ export 'auth.dart';
 export 'user.dart';
 export 'gym.dart';
 export 'leaderboard.dart';
+export 'problem.dart';
 export 'video.dart'; 

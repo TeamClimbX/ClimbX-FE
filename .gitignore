@@ -66,4 +66,6 @@ GoogleService-Info.plist
 **/GoogleService-Info.plist
 
 ios/Flutter/Debug.xcconfig
+
 ios/Flutter/Release.xcconfig
+
