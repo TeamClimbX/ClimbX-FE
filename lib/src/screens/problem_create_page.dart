@@ -8,6 +8,7 @@ import '../models/gym.dart';
 import '../utils/color_schemes.dart';
 import '../utils/image_compressor.dart';
 import '../widgets/gym_area_map_overlay.dart';
+import '../utils/profile_refresh_manager.dart';
 
 /// 문제 등록 페이지
 class ProblemCreatePage extends StatefulWidget {
@@ -162,6 +163,9 @@ class _ProblemCreatePageState extends State<ProblemCreatePage> {
         holdColor: ColorCodes.koreanLabelToServerCode(_holdColor),
         imageFile: _imageFile!,
       );
+
+      // 문제 등록 성공 시 프로필 새로고침 플래그 설정
+      await ProfileRefreshManager().setNeedsRefresh(true);
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
