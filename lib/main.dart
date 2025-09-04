@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_naver_map/flutter_naver_map.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:fquery/fquery.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'src/widgets/auth_wrapper.dart';
@@ -13,12 +12,11 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: '.env');
   
   // 네이버 맵 클라이언트 ID 검증
-  final naverMapClientId = dotenv.env['NAVER_MAP_CLIENT_ID'];
-  if (naverMapClientId == null || naverMapClientId.isEmpty) {
-    throw Exception('.env 파일에 NAVER_MAP_CLIENT_ID가 설정되지 않았습니다.');
+  const naverMapClientId = String.fromEnvironment('NAVER_MAP_CLIENT_ID');
+  if (naverMapClientId.isEmpty) {
+    throw Exception('NAVER_MAP_CLIENT_ID가 설정되지 않았습니다.');
   }
   
   await FlutterNaverMap().init(
@@ -38,9 +36,9 @@ void main() async {
   );
 
   // 카카오 SDK 초기화
-  final kakaoNativeAppKey = dotenv.env['KAKAO_NATIVE_APP_KEY'];
-  if (kakaoNativeAppKey == null || kakaoNativeAppKey.isEmpty) {
-    throw Exception('.env 파일에 KAKAO_NATIVE_APP_KEY가 설정되지 않았습니다.');
+  const kakaoNativeAppKey = String.fromEnvironment('KAKAO_NATIVE_APP_KEY');
+  if (kakaoNativeAppKey.isEmpty) {
+    throw Exception('KAKAO_NATIVE_APP_KEY가 설정되지 않았습니다.');
   }
   KakaoSdk.init(nativeAppKey: kakaoNativeAppKey);
 

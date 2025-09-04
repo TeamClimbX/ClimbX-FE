@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:developer' as developer;
 import '../auth/auth_interceptor.dart';
 import '../error/error_interceptor.dart';
@@ -32,7 +31,7 @@ class ApiResponse<T> {
 
 /// 강화된 Dio 기반 API 클라이언트
 class ApiClient {
-  static final String _baseUrl = dotenv.env['BASE_URL'] ?? '';
+  static const String _baseUrl = String.fromEnvironment('BASE_URL');
 
   late final Dio _dio;
   static ApiClient? _instance;

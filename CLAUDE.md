@@ -13,28 +13,77 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 
 # Run app in debug mode
-flutter run
+flutter run \
+  --dart-define=NAVER_MAP_CLIENT_ID="3u7pzbs2ft" \
+  --dart-define=BASE_URL="https://dev.climbx.me" \
+  --dart-define=KAKAO_NATIVE_APP_KEY="3a7eb659055f220167307cebdadc52f9" \
+  --dart-define=APPLE_SERVICE_ID="com.example.climbxFe.service" \
+  --dart-define=APPLE_APP_ID="com.example.climbxFe" \
+  --dart-define=GOOGLE_IOS_CLIENT_ID="798391464641-pa8167jo8eusga2qlc3snjcabmu2fs3v.apps.googleusercontent.com" \
+  --dart-define=GOOGLE_WEB_CLIENT_ID="798391464641-osbfon603i2bc1jfgeen24f4354tjc4c.apps.googleusercontent.com"
 
 # Run on specific device
-flutter run -d "device-id"
+flutter run -d "device-id" \
+  --dart-define=NAVER_MAP_CLIENT_ID="3u7pzbs2ft" \
+  --dart-define=BASE_URL="https://dev.climbx.me" \
+  --dart-define=KAKAO_NATIVE_APP_KEY="3a7eb659055f220167307cebdadc52f9" \
+  --dart-define=APPLE_SERVICE_ID="com.example.climbxFe.service" \
+  --dart-define=APPLE_APP_ID="com.example.climbxFe" \
+  --dart-define=GOOGLE_IOS_CLIENT_ID="798391464641-pa8167jo8eusga2qlc3snjcabmu2fs3v.apps.googleusercontent.com" \
+  --dart-define=GOOGLE_WEB_CLIENT_ID="798391464641-osbfon603i2bc1jfgeen24f4354tjc4c.apps.googleusercontent.com"
 
 # Run iOS simulator
-flutter run -d "iOS Simulator"
+flutter run -d "iOS Simulator" \
+  --dart-define=NAVER_MAP_CLIENT_ID="3u7pzbs2ft" \
+  --dart-define=BASE_URL="https://dev.climbx.me" \
+  --dart-define=KAKAO_NATIVE_APP_KEY="3a7eb659055f220167307cebdadc52f9" \
+  --dart-define=APPLE_SERVICE_ID="com.example.climbxFe.service" \
+  --dart-define=APPLE_APP_ID="com.example.climbxFe" \
+  --dart-define=GOOGLE_IOS_CLIENT_ID="798391464641-pa8167jo8eusga2qlc3snjcabmu2fs3v.apps.googleusercontent.com" \
+  --dart-define=GOOGLE_WEB_CLIENT_ID="798391464641-osbfon603i2bc1jfgeen24f4354tjc4c.apps.googleusercontent.com"
 
 # Run Android emulator  
-flutter run -d "Android Emulator"
+flutter run -d "Android Emulator" \
+  --dart-define=NAVER_MAP_CLIENT_ID="3u7pzbs2ft" \
+  --dart-define=BASE_URL="https://dev.climbx.me" \
+  --dart-define=KAKAO_NATIVE_APP_KEY="3a7eb659055f220167307cebdadc52f9" \
+  --dart-define=APPLE_SERVICE_ID="com.example.climbxFe.service" \
+  --dart-define=APPLE_APP_ID="com.example.climbxFe" \
+  --dart-define=GOOGLE_IOS_CLIENT_ID="798391464641-pa8167jo8eusga2qlc3snjcabmu2fs3v.apps.googleusercontent.com" \
+  --dart-define=GOOGLE_WEB_CLIENT_ID="798391464641-osbfon603i2bc1jfgeen24f4354tjc4c.apps.googleusercontent.com"
 ```
 
 ### Build & Release
 ```bash
 # Build iOS release
-flutter build ios --release
+flutter build ios --release \
+  --dart-define=NAVER_MAP_CLIENT_ID="3u7pzbs2ft" \
+  --dart-define=BASE_URL="https://dev.climbx.me" \
+  --dart-define=KAKAO_NATIVE_APP_KEY="3a7eb659055f220167307cebdadc52f9" \
+  --dart-define=APPLE_SERVICE_ID="com.example.climbxFe.service" \
+  --dart-define=APPLE_APP_ID="com.example.climbxFe" \
+  --dart-define=GOOGLE_IOS_CLIENT_ID="798391464641-pa8167jo8eusga2qlc3snjcabmu2fs3v.apps.googleusercontent.com" \
+  --dart-define=GOOGLE_WEB_CLIENT_ID="798391464641-osbfon603i2bc1jfgeen24f4354tjc4c.apps.googleusercontent.com"
 
 # Build Android APK
-flutter build apk --release
+flutter build apk --release \
+  --dart-define=NAVER_MAP_CLIENT_ID="3u7pzbs2ft" \
+  --dart-define=BASE_URL="https://dev.climbx.me" \
+  --dart-define=KAKAO_NATIVE_APP_KEY="3a7eb659055f220167307cebdadc52f9" \
+  --dart-define=APPLE_SERVICE_ID="com.example.climbxFe.service" \
+  --dart-define=APPLE_APP_ID="com.example.climbxFe" \
+  --dart-define=GOOGLE_IOS_CLIENT_ID="798391464641-pa8167jo8eusga2qlc3snjcabmu2fs3v.apps.googleusercontent.com" \
+  --dart-define=GOOGLE_WEB_CLIENT_ID="798391464641-osbfon603i2bc1jfgeen24f4354tjc4c.apps.googleusercontent.com"
 
 # Build Android App Bundle
-flutter build appbundle --release
+flutter build appbundle --release \
+  --dart-define=NAVER_MAP_CLIENT_ID="3u7pzbs2ft" \
+  --dart-define=BASE_URL="https://dev.climbx.me" \
+  --dart-define=KAKAO_NATIVE_APP_KEY="3a7eb659055f220167307cebdadc52f9" \
+  --dart-define=APPLE_SERVICE_ID="com.example.climbxFe.service" \
+  --dart-define=APPLE_APP_ID="com.example.climbxFe" \
+  --dart-define=GOOGLE_IOS_CLIENT_ID="798391464641-pa8167jo8eusga2qlc3snjcabmu2fs3v.apps.googleusercontent.com" \
+  --dart-define=GOOGLE_WEB_CLIENT_ID="798391464641-osbfon603i2bc1jfgeen24f4354tjc4c.apps.googleusercontent.com"
 ```
 
 ### Code Quality
@@ -122,10 +171,14 @@ class UserApi {
 - Global navigator key for auth popups
 
 ### Environment Setup
-Required `.env` variables:
+Required `--dart-define` variables:
 - `NAVER_MAP_CLIENT_ID`: Naver Maps API key
+- `BASE_URL`: API server URL
 - `KAKAO_NATIVE_APP_KEY`: Kakao SDK key
-- Additional OAuth keys for Google/Apple Sign In
+- `APPLE_SERVICE_ID`: Apple Sign In service ID
+- `APPLE_APP_ID`: Apple Sign In app ID
+- `GOOGLE_IOS_CLIENT_ID`: Google Sign In iOS client ID
+- `GOOGLE_WEB_CLIENT_ID`: Google Sign In web client ID
 
 ### Code Style
 - Uses `flutter_lints` with custom rules in `analysis_options.yaml`
