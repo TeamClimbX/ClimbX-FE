@@ -16,13 +16,11 @@ import 'dart:developer' as developer;
 class MainPage extends StatefulWidget {
   final BottomNavTab? initialTab;
   final int? initialGymIdForSearch;
-  final bool isGuestMode;
 
   const MainPage({
     super.key,
     this.initialTab,
     this.initialGymIdForSearch,
-    this.isGuestMode = false,
   });
 
   @override
@@ -37,15 +35,12 @@ class MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    // 초기 탭 설정 - 게스트모드면 지도, 로그인모드면 프로필이 기본
-    _currentTab = widget.initialTab ?? 
-        (widget.isGuestMode ? BottomNavTab.map : BottomNavTab.profile);
+    // 초기 탭 설정 - 프로필이 첫 번째 탭이므로 기본값으로 설정
+    _currentTab = widget.initialTab ?? BottomNavTab.profile;
     _gymIdForSearch = widget.initialGymIdForSearch;
 
-    // 로그인된 사용자만 프로필 로드
-    if (!widget.isGuestMode) {
-      _loadUserProfile();
-    }
+    // 유저 프로필 로드
+    _loadUserProfile();
   }
 
   @override
@@ -63,22 +58,19 @@ class MainPageState extends State<MainPage> {
         backgroundColor: AppColorSchemes.backgroundSecondary,
 
         // 상단 앱바
-        appBar: CustomAppBar(isGuestMode: widget.isGuestMode),
+        appBar: const CustomAppBar(),
       // Body - Indexed Stack으로 화면 전환
       body: IndexedStack(
         index: _currentTab.index,
         children: [
           // 0: 프로필
-          ProfileBody(isGuestMode: widget.isGuestMode),
+          const ProfileBody(),
           // 1: 리더보드
-          LeaderboardBody(isGuestMode: widget.isGuestMode),
+          const LeaderboardBody(),
           // 2: 검색
-          SearchBody(
-            initialGymId: _gymIdForSearch,
-            isGuestMode: widget.isGuestMode,
-          ),
+          SearchBody(initialGymId: _gymIdForSearch),
           // 3: 지도
-          MapBody(isGuestMode: widget.isGuestMode),
+          const MapBody(),
         ],
       ),
 

@@ -15,13 +15,8 @@ import '../widgets/submission_list_widget.dart';
 
 class PublicProfilePage extends HookWidget {
   final String nickname;
-  final bool isGuestMode;
 
-  const PublicProfilePage({
-    super.key, 
-    required this.nickname,
-    this.isGuestMode = false,
-  });
+  const PublicProfilePage({super.key, required this.nickname});
 
   @override
   Widget build(BuildContext context) {
@@ -120,10 +115,7 @@ class PublicProfilePage extends HookWidget {
                 _buildScrollContent(VideoGalleryWidget(readOnly: true, nickname: nickname)),
                 Container(
                   color: AppColorSchemes.backgroundSecondary,
-                  child: SubmissionListWidget(
-                    nickname: nickname,
-                    isGuestMode: isGuestMode,
-                  ),
+                  child: SubmissionListWidget(nickname: nickname),
                 ),
               ],
             ),

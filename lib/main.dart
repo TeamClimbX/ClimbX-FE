@@ -5,7 +5,6 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'src/widgets/auth_wrapper.dart';
 import 'src/api/util/core/api_client.dart';
 import 'src/api/util/auth/auth_interceptor.dart';
-import 'src/utils/color_schemes.dart';
 import 'dart:developer' as developer;
 
 // 전역 네비게이터 키 (팝업용)
@@ -55,89 +54,21 @@ void main() async {
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Dialog(
-        backgroundColor: AppColorSchemes.backgroundPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // 아이콘
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  color: AppColorSchemes.accentOrange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(28),
-                ),
-                child: const Icon(
-                  Icons.access_time,
-                  color: AppColorSchemes.accentOrange,
-                  size: 28,
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // 제목
-              const Text(
-                '로그아웃',
-                style: TextStyle(
-                  color: AppColorSchemes.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // 메시지
-              const Text(
-                '로그아웃되었습니다.\n다시 로그인해주세요.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColorSchemes.textSecondary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w400,
-                  height: 1.4,
-                ),
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // 확인 버튼
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    // AuthWrapper가 자동으로 로그인 상태를 확인하고 게스트 모드로 이동
-                    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColorSchemes.accentBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: const Text(
-                    '확인',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+      builder: (context) => AlertDialog(
+        title: const Text('로그인 만료'),
+        content: const Text('로그인이 만료되었습니다. 다시 로그인해주세요.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // AuthWrapper가 자동으로 로그인 상태를 확인하고 LoginPage로 이동
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil('/', (route) => false);
+            },
+            child: const Text('확인'),
           ),
-        ),
+        ],
       ),
     );
   });

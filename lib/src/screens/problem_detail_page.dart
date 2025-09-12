@@ -5,19 +5,16 @@ import '../utils/color_schemes.dart';
 import '../screens/problem_submit_page.dart';
 import '../utils/color_codes.dart';
 import '../utils/navigation_helper.dart';
-import '../utils/login_prompt_helper.dart';
 
 /// 문제 상세 정보 페이지
 class ProblemDetailPage extends StatefulWidget {
   final Problem problem;
   final int? gymId; // 클라이밍장 ID 추가
-  final bool isGuestMode;
 
   const ProblemDetailPage({
     super.key,
     required this.problem,
     this.gymId,
-    this.isGuestMode = false,
   });
 
   @override
@@ -246,12 +243,6 @@ class _ProblemDetailPageState extends State<ProblemDetailPage> {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         onPressed: () {
-          // 게스트 모드면 로그인 프롬프트 표시
-          if (widget.isGuestMode) {
-            LoginPromptHelper.showLoginPrompt(context, '문제를 제출하려면 로그인이 필요합니다');
-            return;
-          }
-          
           // 제출 페이지로 이동
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -287,13 +278,7 @@ class _ProblemDetailPageState extends State<ProblemDetailPage> {
       width: double.infinity,
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: OutlinedButton(
-        onPressed: () {
-          NavigationHelper.navigateToProblemVotes(
-            context, 
-            widget.problem.problemId,
-            isGuestMode: widget.isGuestMode,
-          );
-        },
+        onPressed: () => NavigationHelper.navigateToProblemVotes(context, widget.problem.problemId),
         style: OutlinedButton.styleFrom(
           side: const BorderSide(color: AppColorSchemes.accentBlue, width: 1.5),
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -310,5 +295,4 @@ class _ProblemDetailPageState extends State<ProblemDetailPage> {
       ),
     );
   }
-
 }

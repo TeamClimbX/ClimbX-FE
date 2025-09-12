@@ -9,14 +9,12 @@ class ProblemGridItem extends StatelessWidget {
   final Problem problem;
   final int? gymId; // 클라이밍장 ID 추가
   final VoidCallback? onTapOverride;
-  final bool isGuestMode;
 
   const ProblemGridItem({
     super.key, 
     required this.problem,
     this.gymId,
     this.onTapOverride,
-    this.isGuestMode = false,
   });
 
   @override
@@ -48,7 +46,6 @@ class ProblemGridItem extends StatelessWidget {
             builder: (context) => ProblemDetailPage(
               problem: problem,
               gymId: gymId ?? problem.gymId,
-              isGuestMode: isGuestMode,
             ),
           ),
         );

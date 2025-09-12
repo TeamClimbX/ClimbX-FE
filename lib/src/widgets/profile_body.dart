@@ -14,25 +14,15 @@ import 'video_gallery_widget.dart';
 import '../utils/tier_provider.dart';
 import 'submission_list_widget.dart';
 import '../utils/profile_refresh_manager.dart';
-import '../screens/login_page.dart';
 
 /// 프로필 화면의 메인 바디 위젯
 /// 로딩/에러 상태 처리 및 탭 구조 관리
 
 class ProfileBody extends HookWidget {
-  final bool isGuestMode;
-  
-  const ProfileBody({
-    super.key, 
-    this.isGuestMode = false,
-  });
+  const ProfileBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 게스트 모드면 로그인 프롬프트 화면 표시
-    if (isGuestMode) {
-      return _buildGuestLoginPrompt(context);
-    }
     // 사용자 프로필 데이터 조회
     final userQuery = useQuery<UserProfile, Exception>([
       'user_profile',
@@ -151,7 +141,7 @@ class ProfileBody extends HookWidget {
             // 외부 SingleChildScrollView로 감싸지 않도록 직접 배치
             Container(
               color: AppColorSchemes.backgroundSecondary,
-              child: const SubmissionListWidget(isGuestMode: false),
+              child: const SubmissionListWidget(),
             ),
           ],
         ),
@@ -218,86 +208,5 @@ class _StickyTabBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(_StickyTabBarDelegate oldDelegate) {
     return tabBar != oldDelegate.tabBar;
-  }
-}
-
-extension on ProfileBody {
-  /// 게스트 모드 로그인 프롬프트 화면
-  Widget _buildGuestLoginPrompt(BuildContext context) {
-    return Container(
-      color: AppColorSchemes.backgroundSecondary,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // 클라이밍 아이콘
-          const Icon(
-            Icons.terrain,
-            size: 80,
-            color: AppColorSchemes.accentBlue,
-          ),
-          
-          const SizedBox(height: 32),
-          
-          // 메인 타이틀
-          const Text(
-            '나만의 클라이밍 기록을\n시작하세요',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColorSchemes.textPrimary,
-              fontSize: 28,
-              fontWeight: FontWeight.w700,
-              height: 1.3,
-            ),
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // 서브 타이틀
-          const Text(
-            '프로필, 기록 분석, 문제 등록 등\n모든 기능을 이용하실 수 있습니다',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: AppColorSchemes.textSecondary,
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              height: 1.4,
-            ),
-          ),
-          
-          const SizedBox(height: 48),
-          
-          // 로그인 버튼
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColorSchemes.accentBlue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  '로그인하기',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

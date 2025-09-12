@@ -75,10 +75,10 @@ class AuthWrapper extends HookWidget {
 
     if (isLoggedIn) {
       developer.log('자동 로그인 성공 - MainPage로 이동', name: 'AuthWrapper');
-      return const MainPage(isGuestMode: false);
+      return const MainPage();
     } else {
-      developer.log('게스트 모드로 MainPage 표시', name: 'AuthWrapper');
-      return const MainPage(isGuestMode: true);
+      developer.log('로그인 필요 - LoginPage 표시', name: 'AuthWrapper');
+      return const LoginPage();
     }
   }
 }

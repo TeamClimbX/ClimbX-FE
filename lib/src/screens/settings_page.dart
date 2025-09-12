@@ -33,7 +33,7 @@ class SettingsPage extends StatelessWidget {
             onTap: () async {
               await AuthHelpers.clearToken();
               if (context.mounted) {
-                NavigationHelper.navigateToAuthWrapperAfterLogout(context);
+                NavigationHelper.navigateToLoginAfterLogout(context);
               }
             },
           ),
@@ -124,7 +124,7 @@ class SettingsPage extends StatelessWidget {
                 );
                 await AuthHelpers.clearToken();
                 if (context.mounted) {
-                  NavigationHelper.navigateToAuthWrapperAfterLogout(context);
+                  NavigationHelper.navigateToLoginAfterLogout(context);
                 }
               }
             },

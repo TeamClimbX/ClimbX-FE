@@ -3,7 +3,6 @@ import '../api/problem.dart';
 import '../api/gym.dart';
 import '../models/problem.dart';
 import '../models/gym.dart';
-import '../screens/login_page.dart';
 import '../utils/color_schemes.dart';
 import 'problem_grid_item.dart';
 import 'search_filter_dropdown.dart';
@@ -11,20 +10,13 @@ import '../screens/problem_create_page.dart';
 import '../screens/problem_submit_page.dart';
 import '../utils/color_codes.dart';
 import 'gym_area_map_overlay.dart';
-import '../utils/login_prompt_helper.dart';
 
 /// 검색 탭 메인 위젯
 class SearchBody extends StatefulWidget {
-  const SearchBody({
-    super.key, 
-    this.initialGymId, 
-    this.submissionVideoId,
-    this.isGuestMode = false,
-  });
+  const SearchBody({super.key, this.initialGymId, this.submissionVideoId});
 
   final int? initialGymId;
   final String? submissionVideoId; // 제출 모드: 영상 id 전달받으면 활성화
-  final bool isGuestMode;
 
   @override
   State<SearchBody> createState() => _SearchBodyState();
@@ -303,12 +295,6 @@ class _SearchBodyState extends State<SearchBody> {
           bottom: 16,
           child: FloatingActionButton(
             onPressed: () async {
-              // 게스트 모드면 로그인 프롬프트 표시
-              if (widget.isGuestMode) {
-                LoginPromptHelper.showLoginPrompt(context, '문제를 등록하려면 로그인이 필요합니다');
-                return;
-              }
-              
               // 문제 등록 페이지로 이동 (제출 모드면 videoId도 전달)
               final created = await Navigator.of(context).push(
                 MaterialPageRoute(
@@ -560,51 +546,30 @@ class _SearchBodyState extends State<SearchBody> {
                 ),
               ),
               const SizedBox(height: 12),
-              if (widget.isGuestMode)
-                // 게스트 모드: 로그인 유도 버튼
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const LoginPage()),
-                    );
-                  },
-                  icon: const Icon(Icons.login, color: Colors.white),
-                  label: const Text('로그인하고 문제 등록하기'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColorSchemes.accentBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                )
-              else
-                // 로그인 모드: 기존 문제 등록 버튼
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    final created = await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ProblemCreatePage(
-                          initialGymId: selectedGymId,
-                        ),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  final created = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ProblemCreatePage(
+                        initialGymId: selectedGymId,
                       ),
-                    );
-                    if (created == true) {
-                      _loadProblems();
-                    }
-                  },
-                  icon: const Icon(Icons.add, color: Colors.white),
-                  label: const Text('문제 등록하기'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColorSchemes.accentBlue,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
                     ),
+                  );
+                  if (created == true) {
+                    _loadProblems();
+                  }
+                },
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text('문제 등록하기'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColorSchemes.accentBlue,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
                 ),
+              ),
             ],
             ),
           ),
@@ -627,15 +592,8 @@ class _SearchBodyState extends State<SearchBody> {
             return ProblemGridItem(
               problem: p,
               gymId: selectedGymId,
-              isGuestMode: widget.isGuestMode,
               onTapOverride: widget.submissionVideoId != null
                   ? () {
-                      // 제출 모드에서도 게스트 체크 필요
-                      if (widget.isGuestMode) {
-                        LoginPromptHelper.showLoginPrompt(context, '문제를 제출하려면 로그인이 필요합니다');
-                        return;
-                      }
-                      
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => ProblemSubmitPage(
