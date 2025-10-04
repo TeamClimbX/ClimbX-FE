@@ -448,69 +448,58 @@ class ProblemSubmitPage extends HookWidget {
   ) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColorSchemes.backgroundPrimary,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: AppColorSchemes.lightShadow,
+      ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 영상 업로드 버튼들
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppColorSchemes.backgroundPrimary,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: AppColorSchemes.lightShadow,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '영상 업로드',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColorSchemes.textPrimary,
-                      ),
-                    ),
-                    // 새로고침 버튼
-                    IconButton(
-                      onPressed:
-                          (isLoading || isUploading.value) ? null : onRefresh,
-                      icon: const Icon(Icons.refresh, size: 20),
-                      tooltip: '목록 새로고침',
-                    ),
-                  ],
+          // 헤더
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                '영상 선택',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColorSchemes.textPrimary,
                 ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    // 촬영하기 버튼
-                    Expanded(
-                      child: _buildUploadButton(
-                        icon: Icons.videocam_outlined,
-                        label: '촬영하기',
-                        onTap: isUploading.value ? null : onRecordVideo,
-                        isLoading: false,
-                      ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 업로드 버튼
+                  IconButton(
+                    onPressed: isUploading.value
+                        ? null
+                        : () => _showUploadOptions(context, onRecordVideo, onSelectFromGallery),
+                    icon: Icon(
+                      Icons.add_circle_outline,
+                      size: 20,
+                      color: isUploading.value
+                          ? AppColorSchemes.textTertiary
+                          : AppColorSchemes.accentBlue,
                     ),
-                    const SizedBox(width: 12),
-                    // 갤러리에서 선택 버튼
-                    Expanded(
-                      child: _buildUploadButton(
-                        icon: Icons.photo_library_outlined,
-                        label: '갤러리에서 선택',
-                        onTap: isUploading.value ? null : onSelectFromGallery,
-                        isLoading: false,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+                    tooltip: '영상 업로드',
+                  ),
+                  // 새로고침 버튼
+                  IconButton(
+                    onPressed:
+                        (isLoading || isUploading.value) ? null : onRefresh,
+                    icon: const Icon(Icons.refresh, size: 20),
+                    tooltip: '목록 새로고침',
+                  ),
+                ],
+              ),
+            ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // 영상 목록
           _buildVideoList(
             context,
@@ -522,6 +511,136 @@ class ProblemSubmitPage extends HookWidget {
           ),
         ],
       ),
+    );
+  }
+
+  /// 업로드 옵션 선택 팝업 표시
+  void _showUploadOptions(
+    BuildContext context,
+    VoidCallback onRecordVideo,
+    VoidCallback onSelectFromGallery,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColorSchemes.backgroundPrimary,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 20),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColorSchemes.textTertiary.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                '영상 업로드',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: AppColorSchemes.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    // 촬영하기 옵션
+                    ListTile(
+                      leading: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColorSchemes.accentBlue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.videocam_outlined,
+                          color: AppColorSchemes.accentBlue,
+                          size: 24,
+                        ),
+                      ),
+                      title: const Text(
+                        '촬영하기',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColorSchemes.textPrimary,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        '새로운 영상을 촬영합니다',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColorSchemes.textSecondary,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        onRecordVideo();
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    // 갤러리에서 선택 옵션
+                    ListTile(
+                      leading: Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppColorSchemes.accentBlue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.photo_library_outlined,
+                          color: AppColorSchemes.accentBlue,
+                          size: 24,
+                        ),
+                      ),
+                      title: const Text(
+                        '갤러리에서 선택',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColorSchemes.textPrimary,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        '기존 영상을 선택합니다',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColorSchemes.textSecondary,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.of(context).pop();
+                        onSelectFromGallery();
+                      },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -611,66 +730,97 @@ class ProblemSubmitPage extends HookWidget {
     ];
 
     if (allVideos.isEmpty) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.video_library_outlined,
-              size: 64,
-              color: AppColorSchemes.textTertiary,
-            ),
-            SizedBox(height: 16),
-            Text(
-              '완료된 영상이 없습니다',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColorSchemes.textSecondary,
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColorSchemes.accentBlue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Icon(
+                  Icons.videocam_off_outlined,
+                  size: 32,
+                  color: AppColorSchemes.accentBlue.withValues(alpha: 0.7),
+                ),
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              '영상을 업로드하고 처리가 완료되면\n여기서 선택할 수 있습니다',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColorSchemes.textTertiary,
+              const SizedBox(height: 20),
+              const Text(
+                '아직 영상이 없습니다',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColorSchemes.textPrimary,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColorSchemes.textSecondary,
+                    height: 1.4,
+                  ),
+                  children: [
+                    const TextSpan(text: '우측 상단의 '),
+                    WidgetSpan(
+                      child: Icon(
+                        Icons.add_circle_outline,
+                        size: 14,
+                        color: AppColorSchemes.accentBlue,
+                      ),
+                    ),
+                    const TextSpan(text: ' 버튼을 눌러\n첫 영상을 업로드해보세요'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       );
     }
 
-    return Column(
-      children: allVideos.asMap().entries.map((entry) {
-        final video = entry.value;
+    return GridView.builder(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: allVideos.length,
+      itemBuilder: (context, index) {
+        final video = allVideos[index];
         final isSelected = selectedVideoIds.value.contains(video.videoId);
-        
-        return Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          child: _buildVideoItem(
-            context,
-            video,
-            isSelected,
-            (selected) {
-              if (selected) {
-                // 단일 선택: 라디오 동작으로 현재 선택만 유지
-                selectedVideoIds.value = {video.videoId!};
-              } else {
-                // 선택 해제 시 비우기 (0개 선택 상태 허용)
-                selectedVideoIds.value = {};
-              }
-            },
-          ),
+
+        return _buildVideoGridTile(
+          context,
+          video,
+          isSelected,
+          (selected) {
+            if (selected) {
+              // 단일 선택: 라디오 동작으로 현재 선택만 유지
+              selectedVideoIds.value = {video.videoId!};
+            } else {
+              // 선택 해제 시 비우기 (0개 선택 상태 허용)
+              selectedVideoIds.value = {};
+            }
+          },
         );
-      }).toList(),
+      },
     );
   }
 
-  /// 영상 아이템 위젯
-  Widget _buildVideoItem(
+  /// 영상 그리드 타일 위젯
+  Widget _buildVideoGridTile(
     BuildContext context,
     Video video,
     bool isSelected,
@@ -678,123 +828,141 @@ class ProblemSubmitPage extends HookWidget {
   ) {
     final bool isSelectable = video.isCompleted && video.hasValidUrl && !video.isUploading;
 
-    return GestureDetector(
-      onTap: isSelectable ? () => onSelectionChanged(!isSelected) : null,
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColorSchemes.backgroundPrimary,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected 
-              ? AppColorSchemes.accentBlue 
-              : AppColorSchemes.borderPrimary,
-            width: isSelected ? 2 : 1,
+    return Stack(
+      children: [
+        // 영상 썸네일 (클릭 시 재생)
+        GestureDetector(
+          onTap: (video.isUploading || video.isPending || video.isProcessing)
+              ? null
+              : () => _onVideoTap(context, video),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isSelected
+                    ? AppColorSchemes.accentBlue
+                    : AppColorSchemes.textTertiary.withValues(alpha: 0.2),
+                width: isSelected ? 2 : 1,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(isSelected ? 10 : 11),
+              child: Stack(
+                children: [
+                  // 썸네일/상태 표시
+                  Positioned.fill(
+                    child: video.isUploading
+                        ? _buildStatusCell(context, '업로드중')
+                        : (video.isPending || video.isProcessing)
+                            ? _buildStatusCell(context, '서버 처리중')
+                            : video.getThumbnailWidget(fit: BoxFit.cover),
+                  ),
+
+                  // 재생 시간 (좌측 하단)
+                  if (video.formattedDuration.isNotEmpty)
+                    Positioned(
+                      left: 6,
+                      bottom: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 4,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.7),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          video.formattedDuration,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                offset: const Offset(0.5, 0.5),
+                                blurRadius: 1,
+                                color: Colors.black.withValues(alpha: 0.8),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  // 업로드 진행률 오버레이
+                  if (video.isUploading && video.uploadProgress != null)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(
+                                value: video.uploadProgress,
+                                strokeWidth: 3,
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                                backgroundColor: Colors.white.withValues(
+                                  alpha: 0.3,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                '${(video.uploadProgress! * 100).toInt()}%',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
-          boxShadow: AppColorSchemes.lightShadow,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              // 체크박스
-              Container(
+
+        // 선택 체크 버튼 (우측 상단, 별도 터치 영역)
+        if (isSelectable)
+          Positioned(
+            top: 6,
+            right: 6,
+            child: GestureDetector(
+              onTap: () => onSelectionChanged(!isSelected),
+              child: Container(
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  color: isSelected
+                      ? AppColorSchemes.accentBlue
+                      : Colors.black.withValues(alpha: 0.5),
                   border: Border.all(
-                    color: isSelectable
-                        ? (isSelected
-                            ? AppColorSchemes.accentBlue
-                            : AppColorSchemes.borderPrimary)
-                        : AppColorSchemes.borderPrimary,
+                    color: Colors.white,
                     width: 2,
                   ),
                 ),
                 child: isSelected
-                    ? Center(
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: AppColorSchemes.accentBlue,
-                          ),
-                        ),
+                    ? const Icon(
+                        Icons.check,
+                        size: 14,
+                        color: Colors.white,
                       )
                     : null,
               ),
-              
-              const SizedBox(width: 12),
-              
-              // 썸네일/상태 (업로드중/서버 처리중/썸네일)
-              Container(
-                width: 80,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: AppColorSchemes.borderPrimary,
-                    width: 1,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(7),
-                  child: video.isUploading
-                      ? _buildStatusCell(context, '업로드중')
-                      : (video.isPending || video.isProcessing)
-                          ? _buildStatusCell(context, '서버 처리중')
-                          : video.getThumbnailWidget(
-                              width: 80,
-                              height: 60,
-                              fit: BoxFit.cover,
-                            ),
-                ),
-              ),
-              
-              const SizedBox(width: 12),
-              
-              // 영상 정보
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      video.displayName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColorSchemes.textPrimary,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${video.formattedDuration} • ${video.createdAt.toString().split(' ')[0]}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColorSchemes.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              
-              // 재생 버튼 (업로드중/처리중일 때는 disabled)
-              IconButton(
-                onPressed: (video.isUploading || video.isPending || video.isProcessing)
-                    ? null
-                    : () => _onVideoTap(context, video),
-                icon: const Icon(
-                  Icons.play_circle_outline,
-                  color: AppColorSchemes.accentBlue,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
+      ],
     );
   }
 
