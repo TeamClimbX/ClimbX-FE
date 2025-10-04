@@ -34,6 +34,7 @@ class SearchBody extends StatefulWidget {
 class _SearchBodyState extends State<SearchBody> {
   // 검색 관련 상태
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   List<Gym> _gyms = [];
   List<Gym> _filteredGyms = [];
   Gym? _selectedGym;
@@ -59,6 +60,13 @@ class _SearchBodyState extends State<SearchBody> {
     // GA 이벤트 로깅
     AnalyticsHelper.visitProblemSearchView();
     _loadGyms();
+
+    // FocusNode 리스너 추가
+    _searchFocusNode.addListener(() {
+      setState(() {
+        _isSearching = _searchFocusNode.hasFocus;
+      });
+    });
   }
 
   @override
@@ -82,6 +90,7 @@ class _SearchBodyState extends State<SearchBody> {
   @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -174,9 +183,8 @@ class _SearchBodyState extends State<SearchBody> {
       levelColor: _selectedLocalLevel,
       holdColor: _selectedHoldColor,
     );
-    
+
     setState(() {
-      _isSearching = query.isNotEmpty;
       if (query.isEmpty) {
         _filteredGyms = _gyms;
       } else {
@@ -184,7 +192,6 @@ class _SearchBodyState extends State<SearchBody> {
             .where(
               (gym) => gym.name.toLowerCase().contains(query.toLowerCase()),
             )
-            .take(3) // 상위 3개만 표시
             .toList();
       }
     });
@@ -194,12 +201,12 @@ class _SearchBodyState extends State<SearchBody> {
   void _clearSearch() {
     setState(() {
       _searchController.clear();
-      _isSearching = false;
       _filteredGyms = _gyms;
       _selectedGym = null; // 선택된 클라이밍장도 초기화
       _gymAreas = [];
       _selectedAreaId = null;
     });
+    _searchFocusNode.unfocus();
     _loadProblems(); // X 버튼 클릭 시에도 문제 목록 다시 로드
   }
 
@@ -208,10 +215,10 @@ class _SearchBodyState extends State<SearchBody> {
     setState(() {
       _selectedGym = gym;
       _searchController.text = gym.name;
-      _isSearching = false;
       _gymAreas = [];
       _selectedAreaId = null;
     });
+    _searchFocusNode.unfocus();
     _loadGymAreas(gym.gymId);
     _loadProblems();
   }
@@ -382,6 +389,7 @@ class _SearchBodyState extends State<SearchBody> {
         ),
         child: TextField(
           controller: _searchController,
+          focusNode: _searchFocusNode,
           onChanged: _onSearchChanged,
           decoration: InputDecoration(
             hintText: '클라이밍장을 검색하세요',
@@ -413,7 +421,7 @@ class _SearchBodyState extends State<SearchBody> {
     );
   }
 
-  /// 검색 결과 오버레이 위젯
+  /// 검색 결과 오버레이 위젯 (3칸 높이로 제한하고 스크롤 가능)
   Widget _buildSearchOverlay() {
     return Positioned(
       top: 80, // 검색바 아래에 위치
@@ -423,6 +431,9 @@ class _SearchBodyState extends State<SearchBody> {
         elevation: 8,
         borderRadius: BorderRadius.circular(12),
         child: Container(
+          constraints: const BoxConstraints(
+            maxHeight: 180, // 약 3칸 높이 (각 ListTile 약 60px)
+          ),
           decoration: BoxDecoration(
             color: AppColorSchemes.backgroundPrimary,
             borderRadius: BorderRadius.circular(12),

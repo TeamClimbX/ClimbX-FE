@@ -27,10 +27,12 @@ class MapBody extends HookWidget {
       AnalyticsHelper.visitMap();
       return null;
     }, []);
-    
+
     final controller = useState<NaverMapController?>(null);
     final searchController = useTextEditingController();
+    final searchFocusNode = useFocusNode();
     final searchQuery = useState<String>('');
+    final isSearching = useState<bool>(false);
     final debounceTimer = useRef<Timer?>(null);
 
     // useQuery 효과를 위한 커스텀 hook
@@ -472,6 +474,16 @@ class MapBody extends HookWidget {
       return null;
     }, [controller.value, gyms, addMarkersToMap]);
 
+    // 포커스 리스너 useEffect
+    useEffect(() {
+      void onFocusChange() {
+        isSearching.value = searchFocusNode.hasFocus;
+      }
+
+      searchFocusNode.addListener(onFocusChange);
+      return () => searchFocusNode.removeListener(onFocusChange);
+    }, [searchFocusNode]);
+
     // 디바운스 정리 useEffect
     useEffect(() {
       return () => debounceTimer.value?.cancel();
@@ -539,47 +551,123 @@ class MapBody extends HookWidget {
             ),
             child: TextField(
               controller: searchController,
+              focusNode: searchFocusNode,
               textAlignVertical: TextAlignVertical.center,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: '주변 클라이밍장 찾기',
-                hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
-                prefixIcon: Icon(Icons.search, color: Colors.grey, size: 24),
+                hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey, size: 24),
+                suffixIcon: searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, color: Colors.grey),
+                        onPressed: () {
+                          searchController.clear();
+                          searchQuery.value = '';
+                          searchFocusNode.unfocus();
+                        },
+                      )
+                    : null,
                 border: InputBorder.none,
-                contentPadding: EdgeInsets.symmetric(
+                contentPadding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 0,
                 ),
                 isDense: true,
               ),
-              onSubmitted: (value) => searchQuery.value = value,
+              onSubmitted: (value) {
+                searchQuery.value = value;
+                searchFocusNode.unfocus();
+              },
               onChanged: onSearchChanged,
             ),
           ),
         ),
 
         // 클라이밍장 개수 표시
-        Positioned(
-          top: 80,
-          left: 16,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: Text(
-              '클라이밍장 ${gyms.length}개',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        if (!isSearching.value)
+          Positioned(
+            top: 80,
+            left: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Text(
+                '클라이밍장 ${gyms.length}개',
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
             ),
           ),
-        ),
+
+        // 검색 결과 오버레이
+        if (isSearching.value && gyms.isNotEmpty)
+          Positioned(
+            top: 76, // 검색바 아래
+            left: 16,
+            right: 16,
+            child: Material(
+              elevation: 8,
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                constraints: const BoxConstraints(
+                  maxHeight: 180, // 약 3칸 높이
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: EdgeInsets.zero,
+                  itemCount: gyms.length,
+                  itemBuilder: (context, index) {
+                    final gym = gyms[index];
+                    return ListTile(
+                      title: Text(
+                        gym.name,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: AppColorSchemes.textPrimary,
+                        ),
+                      ),
+                      subtitle: Text(
+                        gym.address,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColorSchemes.textSecondary,
+                        ),
+                      ),
+                      onTap: () {
+                        AnalyticsHelper.clickMarker(gym.gymId);
+                        searchController.text = gym.name;
+                        searchQuery.value = gym.name;
+                        searchFocusNode.unfocus();
+                        showGymDetailBottomSheet(gym);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }
