@@ -644,51 +644,6 @@ class ProblemSubmitPage extends HookWidget {
     );
   }
 
-  /// 업로드 버튼 위젯
-  Widget _buildUploadButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback? onTap,
-    required bool isLoading,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        decoration: BoxDecoration(
-          color: onTap != null
-              ? AppColorSchemes.accentBlue
-              : AppColorSchemes.textTertiary,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: onTap != null
-                ? AppColorSchemes.accentBlue
-                : AppColorSchemes.borderPrimary,
-            width: 1,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: Colors.white,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   /// 영상 목록 위젯
   Widget _buildVideoList(
@@ -762,14 +717,14 @@ class ProblemSubmitPage extends HookWidget {
               const SizedBox(height: 8),
               RichText(
                 textAlign: TextAlign.center,
-                text: TextSpan(
-                  style: const TextStyle(
+                text: const TextSpan(
+                  style: TextStyle(
                     fontSize: 13,
                     color: AppColorSchemes.textSecondary,
                     height: 1.4,
                   ),
                   children: [
-                    const TextSpan(text: '우측 상단의 '),
+                    TextSpan(text: '우측 상단의 '),
                     WidgetSpan(
                       child: Icon(
                         Icons.add_circle_outline,
@@ -777,7 +732,7 @@ class ProblemSubmitPage extends HookWidget {
                         color: AppColorSchemes.accentBlue,
                       ),
                     ),
-                    const TextSpan(text: ' 버튼을 눌러\n첫 영상을 업로드해보세요'),
+                    TextSpan(text: ' 버튼을 눌러\n첫 영상을 업로드해보세요'),
                   ],
                 ),
               ),
@@ -935,30 +890,33 @@ class ProblemSubmitPage extends HookWidget {
         // 선택 체크 버튼 (우측 상단, 별도 터치 영역)
         if (isSelectable)
           Positioned(
-            top: 6,
-            right: 6,
+            top: 0,
+            right: 0,
             child: GestureDetector(
               onTap: () => onSelectionChanged(!isSelected),
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: isSelected
-                      ? AppColorSchemes.accentBlue
-                      : Colors.black.withValues(alpha: 0.5),
-                  border: Border.all(
-                    color: Colors.white,
-                    width: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected
+                        ? AppColorSchemes.accentBlue
+                        : Colors.black.withValues(alpha: 0.5),
+                    border: Border.all(
+                      color: Colors.white,
+                      width: 2,
+                    ),
                   ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check,
+                          size: 14,
+                          color: Colors.white,
+                        )
+                      : null,
                 ),
-                child: isSelected
-                    ? const Icon(
-                        Icons.check,
-                        size: 14,
-                        color: Colors.white,
-                      )
-                    : null,
               ),
             ),
           ),
